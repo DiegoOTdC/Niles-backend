@@ -12,30 +12,88 @@ const client = new vision.ImageAnnotatorClient({
   },
 });
 
-const analyseImage = async () => {
+const analyseImage = async (image) => {
+  console.log("image", image);
   try {
-    const filename = "./oreo.jpg";
+    //detect from external url
+    const request = {
+      // features: [
+      //   {
+      //     type: "WEB_DETECTION",
+      //   },
+      // ],
+      image: {
+        source: {
+          imageUri: image,
+        },
+      },
+    };
 
-    const [result] = await client.labelDetection(filename);
+    //detect image from local storage
+    const [result] = await client.labelDetection(request);
     const allLabels = result.labelAnnotations;
     console.log("Labels:");
     console.log(allLabels[0].description);
     const label = allLabels[0].description;
 
     console.log("1st label:", label);
+    return label;
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
   }
 };
 
-const searchEdamam = async (queryText) => {
+const searchEdamam = async (searchText) => {
   const app_id = process.env.EDAMAM_ID;
   const app_key = process.env.EDAMAM_KEY;
 
   const response = await axios.get(
-    `https://api.edamam.com/search?q=${queryText}&app_id=${app_id}&app_key=${app_key}`
+    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}`
   );
-  console.log(response.data.hits[0].recipe);
+
+  console.log("response", response.data.hits[0]);
+
+  const recipes = response.data.hits.slice(0, 10).map((i) => {
+    const {
+      label,
+      image,
+      source,
+      sourceUrl,
+      yield,
+      dietLabels,
+      healthLabels,
+      cautions,
+      ingredientLines,
+      ingredients,
+      calories,
+      totalTime,
+      totalNutrients,
+      totalDaily,
+      digest,
+      totalWeight,
+    } = i.recipe;
+
+    return {
+      title: label,
+      imageUrl: image,
+      source,
+      sourceUrl,
+      text: ingredientLines,
+      ingredients,
+      yield,
+      dietLabels,
+      healthLabels,
+      cautions,
+      calories,
+      totalTime,
+      totalNutrients,
+      totalDaily,
+      digest,
+      totalWeight,
+    };
+  });
+
+  return recipes;
 };
 
 module.exports = { analyseImage, searchEdamam };

@@ -39,7 +39,7 @@ const analyseImage = async (image) => {
   try {
     const filename = "./utils/oreo.jpg";
 
-    const [result] = await client.labelDetection(image);
+    const [result] = await client.labelDetection(filename);
     const allLabels = result.labelAnnotations;
     console.log("Labels:");
     console.log(allLabels[0].description);
@@ -51,12 +51,12 @@ const analyseImage = async (image) => {
   }
 };
 
-const searchEdamam = async (queryText) => {
+const searchEdamam = async (searchText) => {
   const app_id = process.env.EDAMAM_ID;
   const app_key = process.env.EDAMAM_KEY;
 
   const response = await axios.get(
-    `https://api.edamam.com/search?q=${queryText}&app_id=${app_id}&app_key=${app_key}`
+    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}`
   );
   console.log(response.data.hits[0].recipe);
 };
