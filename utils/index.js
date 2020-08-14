@@ -13,32 +13,17 @@ const client = new vision.ImageAnnotatorClient({
 });
 
 const analyseImage = async (image) => {
-  console.log("image", image);
   try {
-    //detect from external url
     const request = {
-      // features: [
-      //   {
-      //     type: "WEB_DETECTION",
-      //   },
-      // ],
       image: {
         source: {
           imageUri: image,
         },
       },
     };
-
-    //detect image from local storage
     const [result] = await client.labelDetection(request);
-    console.log("the result:", result);
     const allLabels = result.labelAnnotations.map((item) => item.description);
-    // console.log("Labels:");
-    // console.log(allLabels[0].description);
-    // const label = allLabels[0].description;
 
-    // console.log("1st label:", label);
-    console.log("these are all the labels", allLabels);
     return allLabels;
   } catch (e) {
     console.log(e);
@@ -53,7 +38,6 @@ const searchEdamam = async (searchText) => {
     `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
   );
 
-  console.log("this is the repsonse", response);
   const recipes = response.data.hits.map((i) => {
     const {
       label,
@@ -91,7 +75,7 @@ const searchEdamam = async (searchText) => {
       totalWeight,
     };
   });
-  console.log("recipes length", recipes.length);
+
   return recipes;
 };
 
