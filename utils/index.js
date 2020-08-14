@@ -50,10 +50,11 @@ const searchEdamam = async (searchText) => {
   const app_key = process.env.EDAMAM_KEY;
 
   const response = await axios.get(
-    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}`
+    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
   );
 
-  const recipes = response.data.hits.slice(0, 10).map((i) => {
+  console.log("this is the repsonse", response);
+  const recipes = response.data.hits.map((i) => {
     const {
       label,
       image,
@@ -90,7 +91,7 @@ const searchEdamam = async (searchText) => {
       totalWeight,
     };
   });
-
+  console.log("recipes length", recipes.length);
   return recipes;
 };
 
