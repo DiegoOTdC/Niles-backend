@@ -5,7 +5,8 @@ const router = new Router();
 
 router.post("/", async (req, res, next) => {
   // console.log("what is in the body now?", req.body);
-  const imageLabel = req.body.imageLabel;
+  const foodLabel = req.body.foodLabel;
+  console.log("is this the correct imageLabel", foodLabel);
   // const imageUrl = req.body.imageUrl;
 
   // console.log("imageUrl", imageUrl);
@@ -13,8 +14,8 @@ router.post("/", async (req, res, next) => {
     //   const imageLabel = await analyseImage(imageUrl);
 
     //   if (imageLabel) {
-    const recipes = await searchEdamam(imageLabel);
-    console.log("recipes in route", recipes);
+    const recipes = await searchEdamam(foodLabel);
+
     res.send({ recipes });
     // }
   } catch (e) {

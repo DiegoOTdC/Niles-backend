@@ -53,8 +53,6 @@ const searchEdamam = async (searchText) => {
     `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}`
   );
 
-  console.log("response", response.data.hits[0]);
-
   const recipes = response.data.hits.slice(0, 10).map((i) => {
     const {
       label,
