@@ -4,15 +4,18 @@ const { searchEdamam } = require("../utils");
 const router = new Router();
 
 router.post("/", async (req, res, next) => {
-  const imageUri = req.body.imageUri;
-  console.log("imageUrl", imageUri);
+  console.log("what is in the body now?", req.body);
+
+  const imageUrl = req.body.imageUrl;
+
+  console.log("imageUrl", imageUrl);
   try {
-    const imageLabel = await analyseImage(imageUri);
+    const imageLabel = await analyseImage(imageUrl);
 
     if (imageLabel) {
       const recipes = await searchEdamam(imageLabel);
       console.log("recipes in route", recipes);
-      res.send({ recipes: recipes });
+      res.send({ recipes, imageUrl });
     }
   } catch (e) {
     res.status(400).send({ message: "Sorry! Something went wrong" });

@@ -31,6 +31,7 @@ const analyseImage = async (image) => {
 
     //detect image from local storage
     const [result] = await client.labelDetection(request);
+    console.log("the result:", result);
     const allLabels = result.labelAnnotations;
     console.log("Labels:");
     console.log(allLabels[0].description);
@@ -69,18 +70,17 @@ const searchEdamam = async (searchText) => {
       totalTime,
       totalNutrients,
       totalDaily,
-      digest,
       totalWeight,
     } = i.recipe;
 
     return {
       title: label,
-      imageUrl: image,
+      image,
       source,
       sourceUrl,
       text: ingredientLines,
       ingredients,
-      yield,
+      portion: yield,
       dietLabels,
       healthLabels,
       cautions,
@@ -88,7 +88,6 @@ const searchEdamam = async (searchText) => {
       totalTime,
       totalNutrients,
       totalDaily,
-      digest,
       totalWeight,
     };
   });
