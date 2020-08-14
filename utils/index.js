@@ -32,13 +32,14 @@ const analyseImage = async (image) => {
     //detect image from local storage
     const [result] = await client.labelDetection(request);
     console.log("the result:", result);
-    const allLabels = result.labelAnnotations;
-    console.log("Labels:");
-    console.log(allLabels[0].description);
-    const label = allLabels[0].description;
+    const allLabels = result.labelAnnotations.map((item) => item.description);
+    // console.log("Labels:");
+    // console.log(allLabels[0].description);
+    // const label = allLabels[0].description;
 
-    console.log("1st label:", label);
-    return label;
+    // console.log("1st label:", label);
+    console.log("these are all the labels", allLabels);
+    return allLabels;
   } catch (e) {
     console.log(e);
   }
