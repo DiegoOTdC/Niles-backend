@@ -16,14 +16,12 @@ router.post("/image", async (req, res, next) => {
 });
 
 router.get("/barcode/:barcodeId", async (req, res, next) => {
-  console.log("do we het here?");
   const barcode = req.params.barcodeId;
-  console.log("barcode in route?", barcode);
 
   try {
-    const labels = await analyseBarcode(barcode);
-    console.log("what is in labels here?", labels);
-    res.send(labels);
+    const response = await analyseBarcode(barcode);
+    console.log("what is in labels here?", response);
+    res.send(response);
   } catch (e) {
     res.status(400).send({ message: "Sorry! Something went wrong" });
     next(e);
