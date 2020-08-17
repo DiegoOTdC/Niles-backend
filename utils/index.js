@@ -30,6 +30,15 @@ const analyseImage = async (image) => {
   }
 };
 
+const analyseBarcode = async (barcode) => {
+  console.log("what is barcode?", barcode);
+
+  try {
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const searchEdamam = async (searchText) => {
   const app_id = process.env.EDAMAM_ID;
   const app_key = process.env.EDAMAM_KEY;
@@ -43,7 +52,7 @@ const searchEdamam = async (searchText) => {
       label,
       image,
       source,
-      sourceUrl,
+      url,
       yield,
       dietLabels,
       healthLabels,
@@ -61,7 +70,7 @@ const searchEdamam = async (searchText) => {
       title: label,
       image,
       source,
-      sourceUrl,
+      sourceUrl: url,
       text: ingredientLines,
       ingredients,
       portion: yield,
@@ -79,4 +88,4 @@ const searchEdamam = async (searchText) => {
   return recipes;
 };
 
-module.exports = { analyseImage, searchEdamam };
+module.exports = { analyseImage, analyseBarcode, searchEdamam };
