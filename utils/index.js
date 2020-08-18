@@ -23,7 +23,9 @@ const analyseImage = async (image) => {
     };
     const [result] = await client.labelDetection(request);
     const labels = result.labelAnnotations.map((item) => item.description);
-    const message = { message: "Some connection issue, please try again!" };
+    const message = {
+      message: "There has been a connection issue, please try again!",
+    };
 
     if (result.error && result.error.code) {
       return message;
@@ -31,6 +33,7 @@ const analyseImage = async (image) => {
     return { labels };
   } catch (e) {
     console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
   }
 };
 
@@ -68,62 +71,68 @@ const analyseBarcode = async (barcode) => {
     }
   } catch (e) {
     console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
   }
 };
 
 const searchEdamam = async (searchText) => {
-  const app_id = process.env.EDAMAM_ID;
-  const app_key = process.env.EDAMAM_KEY;
+  try {
+    const app_id = process.env.EDAMAM_ID;
+    const app_key = process.env.EDAMAM_KEY;
 
-  const response = await axios.get(
-    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
-  );
+    const response = await axios.get(
+      `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
+    );
 
-  const recipes = response.data.hits.map((i) => {
-    const {
-      label,
-      image,
-      source,
-      url,
-      yield,
-      dietLabels,
-      healthLabels,
-      cautions,
-      ingredientLines,
-      ingredients,
-      calories,
-      totalTime,
-      totalNutrients,
-      totalDaily,
-      totalWeight,
-    } = i.recipe;
+    const recipes = response.data.hits.map((i) => {
+      const {
+        label,
+        image,
+        source,
+        url,
+        yield,
+        dietLabels,
+        healthLabels,
+        cautions,
+        ingredientLines,
+        ingredients,
+        calories,
+        totalTime,
+        totalNutrients,
+        totalDaily,
+        totalWeight,
+      } = i.recipe;
 
-    return {
-      title: label,
-      image,
-      source,
-      sourceUrl: url,
-      text: ingredientLines,
-      ingredients,
-      portion: yield,
-      dietLabels,
-      healthLabels,
-      cautions,
-      calories,
-      totalTime,
-      totalNutrients,
-      totalDaily,
-      totalWeight,
+      return {
+        title: label,
+        image,
+        source,
+        sourceUrl: url,
+        text: ingredientLines,
+        ingredients,
+        portion: yield,
+        dietLabels,
+        healthLabels,
+        cautions,
+        calories,
+        totalTime,
+        totalNutrients,
+        totalDaily,
+        totalWeight,
+      };
+    });
+
+    const recipesNotFound = {
+      message: `Sorry, we couldn't find any recipes with ${searchText}`,
     };
-  });
-
-  const recipesNotFound = {
-    message: `Sorry, we couldn't find any recipes with ${searchText}`,
-  };
-  if (!response.data.count) {
-    return recipesNotFound;
-  } else {
-    return recipes;
+    if (!response.data.count) {
+      return recipesNotFound;
+    } else {
+      return recipes;
+    }
+  } catch (e) {
+    console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
   }
 };
 
