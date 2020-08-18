@@ -22,7 +22,6 @@ const analyseImage = async (image) => {
       },
     };
     const [result] = await client.labelDetection(request);
-    console.log("what is result?", result);
     const labels = result.labelAnnotations.map((item) => item.description);
 
     return labels;
@@ -33,19 +32,12 @@ const analyseImage = async (image) => {
 
 const analyseBarcode = async (barcode) => {
   try {
-    console.log("what is barcode?", barcode);
-
     const response = await axios.get(
       `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`,
       { headers: { "User-Agent": "Niles - React Native - Version 1.0" } }
     );
 
-    // console.log("What is the response?", response.data.product);
-
     const { product_name, categories_tags, image_url } = response.data.product;
-    console.log("product name:", product_name);
-    console.log("catergory_tags", categories_tags);
-    console.log("imageurl", image_url);
 
     const labels = categories_tags
       ? categories_tags.map((tag) => {
@@ -55,15 +47,21 @@ const analyseBarcode = async (barcode) => {
         })
       : [`${product_name}`];
 
-    console.log("are these tags without 'en:' ?", labels);
-
     const nameAndLabels = {
       name: product_name,
       labels: labels,
       url: image_url,
     };
 
-    return nameAndLabels;
+    const productNotFound = {
+      message: "Sorry, this product has not yet been added to our database",
+    };
+
+    if (product_name && labels) {
+      return nameAndLabels;
+    } else {
+      return productNotFound;
+    }
   } catch (e) {
     console.log(e);
   }
@@ -115,7 +113,14 @@ const searchEdamam = async (searchText) => {
     };
   });
 
-  return recipes;
+  const recipesNotFound = {
+    message: `Sorry, we couldn't find any recipes with ${searchText}`,
+  };
+  if (!response.data.count) {
+    return recipesNotFound;
+  } else {
+    return recipes;
+  }
 };
 
 module.exports = { analyseImage, analyseBarcode, searchEdamam };
