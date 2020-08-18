@@ -23,8 +23,12 @@ const analyseImage = async (image) => {
     };
     const [result] = await client.labelDetection(request);
     const labels = result.labelAnnotations.map((item) => item.description);
+    const message = { message: "Some connection issue, please try again!" };
 
-    return labels;
+    if (result.error && result.error.code) {
+      return message;
+    }
+    return { labels };
   } catch (e) {
     console.log(e);
   }
