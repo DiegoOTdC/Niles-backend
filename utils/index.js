@@ -1,4 +1,3 @@
-//should be in utils/index.js
 require("dotenv").config();
 const vision = require("@google-cloud/vision");
 const axios = require("axios");
