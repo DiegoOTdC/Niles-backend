@@ -22,61 +22,118 @@ const analyseImage = async (image) => {
       },
     };
     const [result] = await client.labelDetection(request);
-    const allLabels = result.labelAnnotations.map((item) => item.description);
+    const labels = result.labelAnnotations.map((item) => item.description);
+    const message = {
+      message: "There has been a connection issue, please try again!",
+    };
 
-    return allLabels;
+    if (result.error && result.error.code) {
+      return message;
+    }
+    return { labels };
   } catch (e) {
     console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
+  }
+};
+
+const analyseBarcode = async (barcode) => {
+  try {
+    const response = await axios.get(
+      `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`,
+      { headers: { "User-Agent": "Niles - React Native - Version 1.0" } }
+    );
+
+    const { product_name, categories_tags, image_url } = response.data.product;
+
+    const labels = categories_tags
+      ? categories_tags.map((tag) => {
+          const tagsplit = tag.split(":");
+
+          return tagsplit[1];
+        })
+      : [`${product_name}`];
+
+    const nameAndLabels = {
+      name: product_name,
+      labels: labels,
+      url: image_url,
+    };
+
+    const productNotFound = {
+      message: "Sorry, this product has not yet been added to our database",
+    };
+
+    if (product_name && labels) {
+      return nameAndLabels;
+    } else {
+      return productNotFound;
+    }
+  } catch (e) {
+    console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
   }
 };
 
 const searchEdamam = async (searchText) => {
-  const app_id = process.env.EDAMAM_ID;
-  const app_key = process.env.EDAMAM_KEY;
+  try {
+    const app_id = process.env.EDAMAM_ID;
+    const app_key = process.env.EDAMAM_KEY;
 
-  const response = await axios.get(
-    `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
-  );
+    const response = await axios.get(
+      `https://api.edamam.com/search?q=${searchText}&app_id=${app_id}&app_key=${app_key}&to=100`
+    );
 
-  const recipes = response.data.hits.map((i) => {
-    const {
-      label,
-      image,
-      source,
-      sourceUrl,
-      yield,
-      dietLabels,
-      healthLabels,
-      cautions,
-      ingredientLines,
-      ingredients,
-      calories,
-      totalTime,
-      totalNutrients,
-      totalDaily,
-      totalWeight,
-    } = i.recipe;
+    const recipes = response.data.hits.map((i) => {
+      const {
+        label,
+        image,
+        source,
+        url,
+        yield,
+        dietLabels,
+        healthLabels,
+        cautions,
+        ingredientLines,
+        ingredients,
+        calories,
+        totalTime,
+        totalNutrients,
+        totalDaily,
+        totalWeight,
+      } = i.recipe;
 
-    return {
-      title: label,
-      image,
-      source,
-      sourceUrl,
-      text: ingredientLines,
-      ingredients,
-      portion: yield,
-      dietLabels,
-      healthLabels,
-      cautions,
-      calories,
-      totalTime,
-      totalNutrients,
-      totalDaily,
-      totalWeight,
+      return {
+        title: label,
+        image,
+        source,
+        sourceUrl: url,
+        text: ingredientLines,
+        ingredients,
+        portion: yield,
+        dietLabels,
+        healthLabels,
+        cautions,
+        calories,
+        totalTime,
+        totalNutrients,
+        totalDaily,
+        totalWeight,
+      };
+    });
+
+    const recipesNotFound = {
+      message: `Sorry, we couldn't find any recipes with ${searchText}`,
     };
-  });
-
-  return recipes;
+    if (!response.data.count) {
+      return recipesNotFound;
+    } else {
+      return recipes;
+    }
+  } catch (e) {
+    console.log(e);
+    return { message: "Sorry, something went wrong! Please try again." };
+  }
 };
 
-module.exports = { analyseImage, searchEdamam };
+module.exports = { analyseImage, analyseBarcode, searchEdamam };
