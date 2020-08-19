@@ -29,7 +29,8 @@ const analyseImage = async (image) => {
     if (result.error && result.error.code) {
       return message;
     }
-    return { labels };
+
+    return { labels: labels, url: image };
   } catch (e) {
     console.log(e);
     return { message: "Sorry, something went wrong! Please try again." };
@@ -37,6 +38,7 @@ const analyseImage = async (image) => {
 };
 
 const analyseBarcode = async (barcode) => {
+  console.log("do we get the barcode?", barcode);
   try {
     const response = await axios.get(
       `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`,
@@ -53,9 +55,11 @@ const analyseBarcode = async (barcode) => {
         })
       : [`${product_name}`];
 
+    const isLabelsOrProductName = labels || { product_name };
+
     const nameAndLabels = {
       name: product_name,
-      labels: labels,
+      labels: isLabelsOrProductName,
       url: image_url,
     };
 
