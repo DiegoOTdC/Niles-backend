@@ -1,6 +1,6 @@
-# Server template
+# Niles Backend
 
-This is a simple server template to for my students to start projects quickly.
+This is the backend part of Niles. For the frontend go to https://github.com/DiegoOTdC/Niles-Frontend
 
 ## Table of contents:
 
